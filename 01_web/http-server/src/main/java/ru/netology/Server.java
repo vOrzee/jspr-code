@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class Server {
     private final List<String> validPaths = loadValidPaths();
 
     private final ExecutorService threadPool = Executors.newFixedThreadPool(64);
-    private final Map<String, Map<String, Handler>> handlers = new HashMap<>();
+    private final Map<String, Map<String, Handler>> handlers = new ConcurrentHashMap<>();
 
     public void addHandler(String method, String uri, Handler handler) {
         handlers.computeIfAbsent(method, keyMethod -> new HashMap<>()).put(uri, handler);
@@ -32,7 +33,7 @@ public class Server {
         try (Stream<Path> walk = Files.walk(Paths.get("./public"))) {
             return walk
                     .filter(Files::isRegularFile)
-                    .map(path -> path.toString().substring(1)) // Избавляемся от начальной точки в пути
+                    .map(path -> path.toString().substring(8))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             e.printStackTrace();
