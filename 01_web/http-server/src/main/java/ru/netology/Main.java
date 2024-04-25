@@ -13,7 +13,21 @@ public class Main {
         server.addHandler("GET", "/classic.html", new Handler() {
             @Override
             public void handle(Request request, BufferedOutputStream responseStream) throws IOException {
-                final var filePath = Path.of(".", "public", request.getPath());
+                var params = request.getQueryParams("redirect");
+                var path = request.getPath();
+                if(!params.isEmpty()) {
+                    //path = params.get(0); // Вроде и так работает, но наверное не совсем честно
+                    var newPath = params.get(0);
+                    responseStream.write((
+                            "HTTP/1.1 302 Found\r\n" +
+                                    "Location: " + newPath + "\r\n" +
+                                    "Connection: close\r\n" +
+                                    "\r\n"
+                    ).getBytes());
+                    responseStream.flush();
+                    return;
+                }
+                final var filePath = Path.of(".", "public", path);
                 final var mimeType = Files.probeContentType(filePath);
                 final var template = Files.readString(filePath);
                 final var content = template.replace(
