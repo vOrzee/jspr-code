@@ -1,30 +1,26 @@
 package ru.netology.model;
 
-public class Post {
-  private long id;
-  private String content;
+import ru.netology.entity.PostEntity;
 
+public record Post(long id, String content) {
   public Post() {
+    this(0, "");
   }
 
-  public Post(long id, String content) {
-    this.id = id;
-    this.content = content;
+  public Post copy() {
+    return new Post(this.id, this.content);
   }
 
-  public long getId() {
-    return id;
+  public Post copy(long id) {
+    return new Post(id, this.content);
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public Post copy(String content) {
+    return new Post(this.id, content);
   }
 
-  public String getContent() {
-    return content;
-  }
-
-  public void setContent(String content) {
-    this.content = content;
+  public PostEntity toEntity() {
+    return new PostEntity(this.id, this.content, false);
   }
 }
+
