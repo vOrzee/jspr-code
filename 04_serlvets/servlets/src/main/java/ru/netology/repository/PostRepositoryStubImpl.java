@@ -1,6 +1,7 @@
 package ru.netology.repository;
 
 import org.springframework.stereotype.Repository;
+import ru.netology.entity.PostEntity;
 import ru.netology.model.Post;
 
 import java.util.*;
@@ -10,23 +11,24 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class PostRepositoryStubImpl implements PostRepository {
 
-  private final Map<Long, Post> posts = new ConcurrentHashMap<>();
+  private final Map<Long, PostEntity> posts = new ConcurrentHashMap<>();
   private final AtomicLong counter = new AtomicLong(1);
 
-  public List<Post> all() {
-    return posts.values().stream().sorted(Comparator.comparing(Post::getId)).toList();
+  public List<PostEntity> all() {
+    return posts.values().stream().sorted(Comparator.comparing(PostEntity::id)).toList();
   }
 
-  public Optional<Post> getById(long id) {
+  public Optional<PostEntity> getById(long id) {
     return Optional.ofNullable(posts.get(id));
   }
 
-  public Post save(Post post) {
-    counter.set(Long.max(counter.get(), post.getId()));
-    if (post.getId() == 0L || post.getId() == counter.get()) {
-      post.setId(counter.getAndIncrement());
+  public PostEntity save(Post post) {
+    counter.set(Long.max(counter.get(), post.id()));
+    if (post.id() == 0L || post.id() == counter.get()) {
+      post = post.copy(counter.getAndIncrement());
     }
-    return posts.put(post.getId(), post);
+    posts.put(post.id(), post.toEntity());
+    return posts.get(post.id());
   }
 
   public void removeById(long id) {
