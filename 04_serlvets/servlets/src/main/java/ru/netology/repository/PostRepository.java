@@ -1,36 +1,16 @@
 package ru.netology.repository;
 
-import org.springframework.stereotype.Repository;
 import ru.netology.model.Post;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.Optional;
 
-// Stub
-@Repository
-public class PostRepository {
+public interface PostRepository {
+    List<Post> all();
 
-  private final Map<Long, Post> posts = new ConcurrentHashMap<>();
-  private final AtomicLong counter = new AtomicLong(1);
+    Optional<Post> getById(long id);
 
-  public List<Post> all() {
-    return posts.values().stream().sorted(Comparator.comparing(Post::getId)).toList();
-  }
+    Post save(Post post);
 
-  public Optional<Post> getById(long id) {
-    return Optional.ofNullable(posts.get(id));
-  }
-
-  public Post save(Post post) {
-    counter.set(Long.max(counter.get(), post.getId()));
-    if (post.getId() == 0L || post.getId() == counter.get()) {
-      post.setId(counter.getAndIncrement());
-    }
-    return posts.put(post.getId(), post);
-  }
-
-  public void removeById(long id) {
-    posts.remove(id);
-  }
+    void removeById(long id);
 }
