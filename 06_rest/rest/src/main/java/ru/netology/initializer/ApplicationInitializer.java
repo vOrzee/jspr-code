@@ -14,10 +14,9 @@ public class ApplicationInitializer implements WebApplicationInitializer {
     context.refresh();
 
     final var servlet = new DispatcherServlet(context);
-    final var registration = servletContext.addServlet(
-        "app", servlet
-    );
+    final var registration = servletContext.addServlet("app", servlet);
     registration.setLoadOnStartup(1);
     registration.addMapping("/");
   }
+
 }
